@@ -47,3 +47,4 @@ canvas.bind('<Key>', fMouvement_vaisseau)
 
 fen.mainloop()
 
+print("kk")
