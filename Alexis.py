@@ -1,16 +1,23 @@
 from tkinter import Tk,Button,Canvas,Label
 
-def fMouvement_vaisseau(event):
-    global X_vaisseau,Y_vaisseau
-    touche = event.keysym
-    print(touche)
-    if touche == 'Right'and X_vaisseau<=650:
-        X_vaisseau += 5
-        canvas.coords(vaisseau,X_vaisseau,Y_vaisseau,X_vaisseau+50,Y_vaisseau+50)
-        print(X_vaisseau)
-    if touche == 'Left' and X_vaisseau>=0:
-        X_vaisseau -= 5
-        canvas.coords(vaisseau,X_vaisseau,Y_vaisseau,X_vaisseau+50,Y_vaisseau+50)
+class cvaisseau():
+    def __init__(self,pX_vaisseau,pY_vaisseau):
+        self.__vie = 10
+        self.__force = 5
+        self.__posX = pX_vaisseau
+        self.__posY = pY_vaisseau
+
+
+
+    def fMouvement_vaisseau(self, event):
+        touche = event.keysym
+        if touche == 'Right'and self.__posX<=650:
+            self.__posX += 5
+            canvas.coords(vaisseau,self.__posX,self.__posY,self.__posX+50,self.__posY+50)
+        if touche == 'Left' and self.__posX>=0:
+            self.__posX -= 5
+            canvas.coords(vaisseau,self.__posX,self.__posY,self.__posX+50,self.__posY+50)
+
 
 
 
@@ -29,10 +36,10 @@ canvas.focus_set()
 X_vaisseau = 325
 Y_vaisseau = 525
 
-Y_alien = 325
+X_alien = 325
 Y_alien = 5
 
-vaisseau = canvas.create_rectangle(X_vaisseau,Y_vaisseau,X_vaisseau+50,Y_vaisseau+50,fill='white')
+vaisseau = canvas.create_rectangle(325,525,325+50,525+50,fill='white')
  
 Bouton_Quitter=Button(fen, text ='Quitter', command = fen.destroy, width=15)
 Bouton_Quitter.place(x=725,y=300)
@@ -40,11 +47,11 @@ Bouton_Quitter.place(x=725,y=300)
 Bouton_Nvlle_Partie=Button(fen, text ='Nouvelle partie', command = fen.destroy, width=15)
 Bouton_Nvlle_Partie.place(x=725,y=500)
 
-alien = canvas.create_rectangle(Y_alien,Y_alien,Y_alien+50,Y_alien+50,fill='green')
+alien = canvas.create_rectangle(X_alien,Y_alien,X_alien+50,Y_alien+50,fill='green')
 
-canvas.bind('<Key>', fMouvement_vaisseau)
+vaisseau_init = cvaisseau(X_vaisseau, Y_vaisseau)
+
+canvas.bind('<Key>', vaisseau_init.fMouvement_vaisseau) 
 
 
 fen.mainloop()
-
-print("kk")
