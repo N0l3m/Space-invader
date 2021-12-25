@@ -1,5 +1,4 @@
-from tkinter import Tk,Button,Canvas,Label
-from timeit import default_timer
+from tkinter import Tk,Button,Canvas,Label,PhotoImage
 
 class cvaisseau():
     def __init__(self,pX_vaisseau,pY_vaisseau):
@@ -8,12 +7,19 @@ class cvaisseau():
         self.__pos_vaisseau_X = pX_vaisseau
         self.__pos_vaisseau_Y = pY_vaisseau
         
-        self.__balle = None
+        
         self.__pos_balle_X = pX_vaisseau
         self.__pos_balle_Y = pY_vaisseau
         self.__temps = 0
-        
 
+        cvaisseau.balle = None
+        cvaisseau.disp_balle = 0
+        cvaisseau.pos_vaisseau_X = 0
+        cvaisseau.pos_vaisseau_Y = 0
+        cvaisseau.pos_X = 0 
+        cvaisseau.pos_Y = 0
+
+        
     def fMouvement_vaisseau(self, event):
         touche = event.keysym
         if touche == 'Right'and self.__pos_vaisseau_X<=650:
@@ -24,67 +30,118 @@ class cvaisseau():
             self.__pos_vaisseau_X -= 10
             self.__pos_balle_X -= 5
             canvas.coords(vaisseau,self.__pos_vaisseau_X,self.__pos_vaisseau_Y,self.__pos_vaisseau_X+50,self.__pos_vaisseau_Y+50)
+
+        cvaisseau.pos_X = self.__pos_vaisseau_X
+        cvaisseau.pos_Y = self.__pos_vaisseau_Y
         
-        if touche == 'space' and self.__temps == 0:
+    def fTir(self, event):
+        if self.__temps == 0:
             self.__temps = 1
-            self.__balle = canvas.create_rectangle(self.__pos_balle_X,self.__pos_balle_Y,self.__pos_balle_X+4,self.__pos_balle_Y+20,fill = "blue")
-            self.fMvmt_balle(self.__pos_vaisseau_X+23,self.__pos_balle_Y)
-        
-        return self.__pos_vaisseau_X,self.__pos_vaisseau_Y
+            cvaisseau.balle = canvas.create_rectangle(self.__pos_balle_X,self.__pos_balle_Y,self.__pos_balle_X+4,self.__pos_balle_Y+20,fill = "blue")
+            self.fMvmt_balle(self.__pos_vaisseau_X + 23, self.__pos_balle_Y)
+
+    def fPos_balle(self, pX, pY):
+
+        cvaisseau.pos_X = pX
+        cvaisseau.pos_Y = pY
+
+        return pX,pY
+    
+    
         
     def fMvmt_balle(self,pX,pY):
+
         if pY >= 0:
-            pY -= 5
-            canvas.coords(self.__balle,pX,pY,pX+4,pY+20)
-            fen.after(2,lambda:self.fMvmt_balle(pX,pY))
+            pY -= 0.5
+            canvas.coords(cvaisseau.balle,pX,pY,pX+4,pY+20)
+            fen.after(1,lambda:self.fMvmt_balle(pX,pY))
+
         if pY == 0:
-            canvas.delete(self.__balle)
+            canvas.delete(cvaisseau.balle)
             self.__temps = 0
+        
+        self.fPos_balle(pX,pY)
+
+        return pX,pY
+      
+
+
+class calien(cvaisseau):
     
-
-
-            
-
-
-    
-
-
-class calien():
     def __init__(self,pX_alien,pY_alien,pVitesse):
-        self.__vie = 10
+        
+        self.__vie = 1
         self.__posX = pX_alien
         self.__posY = pY_alien
         self.__vitesse = pVitesse
         self.__alien = None 
 
+
+        
+
     def fMvmt_alien(self):
-        
-    
-        self.__posX += self.__vitesse
-        
-        if self.__posX >= 650:
-            self.__vitesse = -self.__vitesse
-            self.__posY +=10
+
+        if self.__vie == 1:
+
+            self.__posX += self.__vitesse
             
-        elif self.__posX<5:
-            self.__vitesse = -self.__vitesse
-            self.__posY +=10
-        canvas.delete(self.__alien)
-        self.__alien = canvas.create_rectangle(self.__posX,self.__posY,self.__posX+50,self.__posY+50,fill="green")
-        fen.after(100, self.fMvmt_alien)
+            if self.__posX >= 650:
+                self.__vitesse = -self.__vitesse
+                self.__posY +=50
+                
+            elif self.__posX<5:
+                self.__vitesse = -self.__vitesse
+                self.__posY +=50
+
+            canvas.delete(self.__alien)
+            self.__alien = canvas.create_rectangle(self.__posX,self.__posY,self.__posX+50,self.__posY+50,fill="green")
+            fen.after(25, self.fMvmt_alien)
+            calien.fCollision(self)
+
+        return(self.__posX,self.__posY)
         
+    def fCollision(self):
+
+        if self.__posY<=cvaisseau.pos_Y<=self.__posY+50 and self.__posX-5<=cvaisseau.pos_X<=self.__posX+55 :
+
+            canvas.delete(self.__alien)
+            canvas.delete(cvaisseau.balle)
+            
+            self.__vie = 0
+    
+    
+
+    
+
+
+
 def fPlay():
 
-    canvas.bind('<Key>', vaisseau_init.fMouvement_vaisseau) 
+    X_alien = 325
+    Y_alien = 50
+    vitesse_alien = 2.5
+    nb_alien = 7
 
-    alien_init = calien(X_alien,Y_alien,vitesse_alien)
+    vaisseau_init = cvaisseau(X_vaisseau, Y_vaisseau)
 
-    alien_init.fMvmt_alien()
+    nb_ligne_alien = int(nb_alien/7)
 
-    bouton_play.destroy() 
-    
-
+    for n in range(nb_alien):
         
+        if n<4:
+            calien(X_alien+n*100,Y_alien,vitesse_alien).fMvmt_alien()  
+        if 4<=n<=7:
+            calien(X_alien-(nb_alien-n)*100,Y_alien,vitesse_alien).fMvmt_alien() 
+
+    #print("c",72%7)
+    #print("d",int(72/7))
+
+
+    canvas.bind('<space>',vaisseau_init.fTir)
+
+    canvas.bind('<Key>', vaisseau_init.fMouvement_vaisseau) 
+    
+    bouton_play.destroy() 
 
 
 fen = Tk()
@@ -101,10 +158,6 @@ canvas.focus_set()
 
 X_vaisseau = 325
 Y_vaisseau = 525
-
-X_alien = 325
-Y_alien = 25
-vitesse_alien = 20
  
 Bouton_Quitter=Button(fen, text ='Quitter', command = fen.destroy, width=15)
 Bouton_Quitter.place(x=725,y=300)
@@ -114,13 +167,10 @@ Bouton_Nvlle_Partie.place(x=725,y=500)
 
 vaisseau = canvas.create_rectangle(325,525,325+50,525+50,fill='white')
 
-vaisseau_init = cvaisseau(X_vaisseau, Y_vaisseau)
-
-bouton_play = Button(fen, text = 'Play', command = fPlay, width=15, height= 5, foreground="black")
+bouton_play = Button(fen, text = 'Play', command=lambda: (fPlay()), width=15, height= 5, foreground="black")
 bouton_play.place(x=305,y=300)
 
-
-
 fen.mainloop()
+
 
 
