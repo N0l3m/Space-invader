@@ -1,7 +1,8 @@
 from tkinter import Tk,Button,Canvas,Label,PhotoImage
 
 class cvaisseau():
-    def __init__(self,pX_vaisseau,pY_vaisseau):
+    def __init__(self,pX_vaisseau,pY_vaisseau,pVaisseau):
+
         self.__vie = 10
         self.__force = 5
         self.__pos_vaisseau_X = pX_vaisseau
@@ -12,12 +13,13 @@ class cvaisseau():
         self.__pos_balle_Y = pY_vaisseau
         self.__temps = 0
 
+        cvaisseau.vaisseau = pVaisseau
         cvaisseau.balle = None
-        cvaisseau.disp_balle = 0
         cvaisseau.pos_vaisseau_X = 0
         cvaisseau.pos_vaisseau_Y = 0
         cvaisseau.pos_X = 0 
         cvaisseau.pos_Y = 0
+        cvaisseau.touche = 0
 
         
     def fMouvement_vaisseau(self, event):
@@ -25,11 +27,11 @@ class cvaisseau():
         if touche == 'Right'and self.__pos_vaisseau_X<=650:
             self.__pos_vaisseau_X += 10
             self.__pos_balle_X += 5
-            canvas.coords(vaisseau,self.__pos_vaisseau_X,self.__pos_vaisseau_Y,self.__pos_vaisseau_X+50,self.__pos_vaisseau_Y+50)
+            canvas.coords(cvaisseau.vaisseau,self.__pos_vaisseau_X,self.__pos_vaisseau_Y,self.__pos_vaisseau_X+50,self.__pos_vaisseau_Y+50)
         if touche == 'Left' and self.__pos_vaisseau_X>=0:
             self.__pos_vaisseau_X -= 10
             self.__pos_balle_X -= 5
-            canvas.coords(vaisseau,self.__pos_vaisseau_X,self.__pos_vaisseau_Y,self.__pos_vaisseau_X+50,self.__pos_vaisseau_Y+50)
+            canvas.coords(cvaisseau.vaisseau,self.__pos_vaisseau_X,self.__pos_vaisseau_Y,self.__pos_vaisseau_X+50,self.__pos_vaisseau_Y+50)
 
         cvaisseau.pos_X = self.__pos_vaisseau_X
         cvaisseau.pos_Y = self.__pos_vaisseau_Y
@@ -51,14 +53,23 @@ class cvaisseau():
         
     def fMvmt_balle(self,pX,pY):
 
-        if pY >= 0:
-            pY -= 0.5
-            canvas.coords(cvaisseau.balle,pX,pY,pX+4,pY+20)
-            fen.after(1,lambda:self.fMvmt_balle(pX,pY))
+        if cvaisseau.touche == 0:
+            if pY >= 0:
+                pY -= 0.5
+                canvas.coords(cvaisseau.balle,pX,pY,pX+4,pY+20)
+                fen.after(1,lambda:self.fMvmt_balle(pX,pY))
 
-        if pY == 0:
+            if pY == 0:
+                canvas.delete(cvaisseau.balle)
+                self.__temps = 0
+
+        else:
             canvas.delete(cvaisseau.balle)
             self.__temps = 0
+            cvaisseau.touche = 0
+            pY = 525
+            breakpoint
+                       
         
         self.fPos_balle(pX,pY)
 
@@ -76,11 +87,11 @@ class calien(cvaisseau):
         self.__vitesse = pVitesse
         self.__alien = None 
 
-
         
 
     def fMvmt_alien(self):
-
+        self.fCollision_AlienBalle()
+        self.fCollision_AlienVaisseau()
         if self.__vie == 1:
 
             self.__posX += self.__vitesse
@@ -96,33 +107,41 @@ class calien(cvaisseau):
             canvas.delete(self.__alien)
             self.__alien = canvas.create_rectangle(self.__posX,self.__posY,self.__posX+50,self.__posY+50,fill="green")
             fen.after(25, self.fMvmt_alien)
-            calien.fCollision(self)
+        
 
         return(self.__posX,self.__posY)
         
-    def fCollision(self):
+    def fCollision_AlienBalle(self):
 
         if self.__posY<=cvaisseau.pos_Y<=self.__posY+50 and self.__posX-5<=cvaisseau.pos_X<=self.__posX+55 :
 
             canvas.delete(self.__alien)
             canvas.delete(cvaisseau.balle)
+            cvaisseau.touche = 1
             
             self.__vie = 0
     
+    def fCollision_AlienVaisseau(self):
+        
+        if cvaisseau.pos_vaisseau_Y<=self.__posY<=cvaisseau.pos_vaisseau_Y-50 and cvaisseau.pos_vaisseau_X-50<=self.__posX<=cvaisseau.pos_vaisseau_X:
+            canvas.delete(cvaisseau.vaisseau)
+            print("mort")
     
 
     
 
 
 
-def fPlay():
+def fPlay(pVaisseau):
+
+
 
     X_alien = 325
     Y_alien = 50
-    vitesse_alien = 2.5
+    vitesse_alien = 5
     nb_alien = 7
 
-    vaisseau_init = cvaisseau(X_vaisseau, Y_vaisseau)
+    vaisseau_init = cvaisseau(X_vaisseau, Y_vaisseau, pVaisseau)
 
     nb_ligne_alien = int(nb_alien/7)
 
@@ -167,7 +186,7 @@ Bouton_Nvlle_Partie.place(x=725,y=500)
 
 vaisseau = canvas.create_rectangle(325,525,325+50,525+50,fill='white')
 
-bouton_play = Button(fen, text = 'Play', command=lambda: (fPlay()), width=15, height= 5, foreground="black")
+bouton_play = Button(fen, text = 'Play', command=lambda: (fPlay(vaisseau)), width=15, height= 5, foreground="black")
 bouton_play.place(x=305,y=300)
 
 fen.mainloop()
