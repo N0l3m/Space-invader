@@ -3,7 +3,7 @@ from tkinter import Tk,Button,Canvas,Label,PhotoImage
 class cvaisseau():
     def __init__(self,pX_vaisseau,pY_vaisseau,pVaisseau):
 
-        self.__vie = 10
+        
         self.__force = 5
         self.__pos_vaisseau_X = pX_vaisseau
         self.__pos_vaisseau_Y = pY_vaisseau
@@ -13,10 +13,11 @@ class cvaisseau():
         self.__pos_balle_Y = pY_vaisseau
         self.__temps = 0
 
+        cvaisseau.vie = 3
         cvaisseau.vaisseau = pVaisseau
         cvaisseau.balle = None
-        cvaisseau.pos_vaisseau_X = 0
-        cvaisseau.pos_vaisseau_Y = 0
+        cvaisseau.pos_vaisseau_X = 325
+        cvaisseau.pos_vaisseau_Y = 525
         cvaisseau.pos_X = 0 
         cvaisseau.pos_Y = 0
         cvaisseau.touche = 0
@@ -90,8 +91,8 @@ class calien(cvaisseau):
         
 
     def fMvmt_alien(self):
-        self.fCollision_AlienBalle()
-        self.fCollision_AlienVaisseau()
+        self.fCollision_balle()
+        self.fCollision_vaisseau()
         if self.__vie == 1:
 
             self.__posX += self.__vitesse
@@ -111,7 +112,7 @@ class calien(cvaisseau):
 
         return(self.__posX,self.__posY)
         
-    def fCollision_AlienBalle(self):
+    def fCollision_balle(self):
 
         if self.__posY<=cvaisseau.pos_Y<=self.__posY+50 and self.__posX-5<=cvaisseau.pos_X<=self.__posX+55 :
 
@@ -120,16 +121,11 @@ class calien(cvaisseau):
             cvaisseau.touche = 1
             
             self.__vie = 0
-    
-    def fCollision_AlienVaisseau(self):
+
+    def fCollision_vaisseau(self):
         
-        if cvaisseau.pos_vaisseau_Y<=self.__posY<=cvaisseau.pos_vaisseau_Y-50 and cvaisseau.pos_vaisseau_X-50<=self.__posX<=cvaisseau.pos_vaisseau_X:
+        if cvaisseau.pos_vaisseau_X<=self.__posX<=cvaisseau.pos_vaisseau_X+50 and cvaisseau.pos_vaisseau_Y-50<=self.__posY<=cvaisseau.pos_vaisseau_Y:
             canvas.delete(cvaisseau.vaisseau)
-            print("mort")
-    
-
-    
-
 
 
 def fPlay(pVaisseau):
@@ -138,22 +134,36 @@ def fPlay(pVaisseau):
 
     X_alien = 325
     Y_alien = 50
-    vitesse_alien = 5
-    nb_alien = 7
+    vitesse_alien = 2.5
+    nb_alien = 15
 
     vaisseau_init = cvaisseau(X_vaisseau, Y_vaisseau, pVaisseau)
 
     nb_ligne_alien = int(nb_alien/7)
 
-    for n in range(nb_alien):
-        
-        if n<4:
-            calien(X_alien+n*100,Y_alien,vitesse_alien).fMvmt_alien()  
-        if 4<=n<=7:
-            calien(X_alien-(nb_alien-n)*100,Y_alien,vitesse_alien).fMvmt_alien() 
+    nombre_alien_derniere_ligne = nb_alien%7 
+    print(nombre_alien_derniere_ligne)
+    nombre_de_ligne = int(nb_alien/7)
+    print(nombre_de_ligne)
 
-    #print("c",72%7)
-    #print("d",int(72/7))
+    if nombre_alien_derniere_ligne != 0:
+        for n in range(nombre_alien_derniere_ligne):
+            
+            if n<4:
+                calien(X_alien+n*100,Y_alien+100*(nombre_de_ligne),vitesse_alien).fMvmt_alien()  
+            if 4<=n<=7:
+                calien(X_alien-(nb_alien-n)*100,Y_alien+100*(nombre_de_ligne),vitesse_alien).fMvmt_alien() 
+    
+    for m in range(nombre_de_ligne):
+
+        for a in range(7):
+            
+            if a<4:
+                calien(X_alien+a*100,Y_alien+100*m,vitesse_alien).fMvmt_alien()  
+                print("ok")
+            if 4<=a<=7:
+                print("kk")
+                calien(X_alien-(7-a)*100,Y_alien+100*m,vitesse_alien).fMvmt_alien() 
 
 
     canvas.bind('<space>',vaisseau_init.fTir)
