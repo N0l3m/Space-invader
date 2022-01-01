@@ -128,18 +128,16 @@ class calien(cvaisseau):
             canvas.delete(cvaisseau.vaisseau)
 
 
-def fPlay(pVaisseau):
+def fPlay(pVaisseau,pBouton):
 
 
 
     X_alien = 325
     Y_alien = 50
-    vitesse_alien = 2.5
+    vitesse_alien = 5
     nb_alien = 15
 
     vaisseau_init = cvaisseau(X_vaisseau, Y_vaisseau, pVaisseau)
-
-    nb_ligne_alien = int(nb_alien/7)
 
     nombre_alien_derniere_ligne = nb_alien%7 
     print(nombre_alien_derniere_ligne)
@@ -170,7 +168,20 @@ def fPlay(pVaisseau):
 
     canvas.bind('<Key>', vaisseau_init.fMouvement_vaisseau) 
     
-    bouton_play.destroy() 
+    pBouton.destroy() 
+
+def fNvelle_partie(pX_vaisseau,pY_vaisseau):
+
+    
+
+    canvas.create_rectangle(700,600,0,0, fill="black")
+
+    new_vaisseau = canvas.create_rectangle(pX_vaisseau,pY_vaisseau,pX_vaisseau+50,pY_vaisseau+50,fill='white')
+
+    new_bouton_play = Button(fen, text = 'Relay', command = lambda: (fPlay(new_vaisseau,new_bouton_play)), width=15, height= 5, foreground="black")
+    new_bouton_play.place(x=305,y=300)
+
+
 
 
 fen = Tk()
@@ -191,12 +202,12 @@ Y_vaisseau = 525
 Bouton_Quitter=Button(fen, text ='Quitter', command = fen.destroy, width=15)
 Bouton_Quitter.place(x=725,y=300)
 
-Bouton_Nvlle_Partie=Button(fen, text ='Nouvelle partie', command = canvas.update(), width=15)
+Bouton_Nvlle_Partie=Button(fen, text ='Nouvelle partie', command = lambda: fNvelle_partie(X_vaisseau,Y_vaisseau), width=15)
 Bouton_Nvlle_Partie.place(x=725,y=500)
 
-vaisseau = canvas.create_rectangle(325,525,325+50,525+50,fill='white')
+vaisseau = canvas.create_rectangle(X_vaisseau,Y_vaisseau,X_vaisseau+50,Y_vaisseau+50,fill='white')
 
-bouton_play = Button(fen, text = 'Play', command=lambda: (fPlay(vaisseau)), width=15, height= 5, foreground="black")
+bouton_play = Button(fen, text = 'Play', command = lambda: (fPlay(vaisseau,bouton_play)), width=15, height= 5, foreground="black")
 bouton_play.place(x=305,y=300)
 
 fen.mainloop()
