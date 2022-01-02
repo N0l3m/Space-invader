@@ -1,4 +1,5 @@
 from tkinter import Tk,Button,Canvas,Label,PhotoImage
+import random
 
 class cvaisseau():
     def __init__(self,pX_vaisseau,pY_vaisseau,pVaisseau):
@@ -21,6 +22,7 @@ class cvaisseau():
         cvaisseau.pos_X = 0 
         cvaisseau.pos_Y = 0
         cvaisseau.touche = 0
+        cvaisseau.score = 0
 
         
     def fMouvement_vaisseau(self, event):
@@ -87,7 +89,9 @@ class calien(cvaisseau):
         self.__posY = pY_alien
         self.__vitesse = pVitesse
         self.__alien = None 
-
+        self.__balle_alien = None
+        self.__pos_balle_alien_X = pX_alien+25
+        self.__pos_balle_alien_Y = pY_alien+50
         
 
     def fMvmt_alien(self):
@@ -105,10 +109,14 @@ class calien(cvaisseau):
                 self.__vitesse = -self.__vitesse
                 self.__posY +=50
 
+            #a = random.randint(5000,10000)
+            #fen.after(a,self.fTir_alien)
+
             canvas.delete(self.__alien)
             self.__alien = canvas.create_rectangle(self.__posX,self.__posY,self.__posX+50,self.__posY+50,fill="green")
             fen.after(25, self.fMvmt_alien)
-        
+
+            
 
         return(self.__posX,self.__posY)
         
@@ -121,21 +129,45 @@ class calien(cvaisseau):
             cvaisseau.touche = 1
             
             self.__vie = 0
+            cvaisseau.score += 10
+            self.fAfffichage_score()
+
+    def fAfffichage_score(self):
+        label_score_chiffre.config(text=cvaisseau.score)
+    
 
     def fCollision_vaisseau(self):
         
         if cvaisseau.pos_vaisseau_X<=self.__posX<=cvaisseau.pos_vaisseau_X+50 and cvaisseau.pos_vaisseau_Y-50<=self.__posY<=cvaisseau.pos_vaisseau_Y:
             canvas.delete(cvaisseau.vaisseau)
+            titre_mort = Label(fen,text="WASTED")
+            titre_mort.place(x=360,y=310)
 
+    #def fTir_alien(self):
 
+    #    self.__pos_balle_alien_X = self.__posX-2
+    #    self.__pos_balle_alien_Y = self.__posY+50
+
+    #    self._balle_alien = canvas.create_rectangle(self.__pos_balle_alien_X,self.__pos_balle_alien_Y,self.__pos_balle_alien_X+4,self.__pos_balle_alien_Y+20,fill="red")
+    #    self.fMvmt_balle_alien(self.__pos_balle_alien_X,self.__pos_balle_alien_Y)
+
+    #def fMvmt_balle_alien(self,pX,pY):
+
+    #    if pY <= 600:
+    #            pY += 0.5
+    #            canvas.coords(self.__balle_alien,pX,pY,pX+4,pY+20)
+    #            fen.after(1,lambda:self.fMvmt_balle_alien(pX,pY))
+
+    #    if pY == 700:
+    #        canvas.delete(self.__balle_alien)
+
+    
 def fPlay(pVaisseau,pBouton):
-
-
 
     X_alien = 325
     Y_alien = 50
     vitesse_alien = 5
-    nb_alien = 15
+    nb_alien = 7
 
     vaisseau_init = cvaisseau(X_vaisseau, Y_vaisseau, pVaisseau)
 
@@ -172,10 +204,6 @@ def fPlay(pVaisseau,pBouton):
 
 def fNvelle_partie(pX_vaisseau,pY_vaisseau):
 
-    
-
-    canvas.create_rectangle(700,600,0,0, fill="black")
-
     new_vaisseau = canvas.create_rectangle(pX_vaisseau,pY_vaisseau,pX_vaisseau+50,pY_vaisseau+50,fill='white')
 
     new_bouton_play = Button(fen, text = 'Relay', command = lambda: (fPlay(new_vaisseau,new_bouton_play)), width=15, height= 5, foreground="black")
@@ -189,8 +217,11 @@ fen = Tk()
 fen.geometry("850x700+100+50")
 fen.title("Les invasionneurs de l'espace")
 
-label_score = Label(fen, text ="Votre score")
-label_score.place(x=5,y=5)
+label_score_titre = Label(fen, text ="Votre score")
+label_score_titre.place(x=5,y=5)
+
+label_score_chiffre = Label(fen, text ="0")
+label_score_chiffre.place(x=100,y=5)
 
 canvas = Canvas(fen,width = 700, height = 600 , bd=0, bg="black")
 canvas.place(x=10,y=50)
