@@ -17,7 +17,7 @@ class Vaisseau():
         self.img = self.canvas.create_rectangle(self.x, self.y, self.x+self.dimension[0], self.y+self.dimension[1], fill='white')
         
         self.force = 5
-        self.temps_de_recharge = 800
+        self.temps_de_recharge = 1500
         self.vie = 3
         self.vitesse_tir = 0.3
         self.reload = True
@@ -26,6 +26,8 @@ class Vaisseau():
         self.score = 0
         self.score_label = pScore_label
         self.nb_alien_mort = 0
+
+        self.fCollision_alien()
 
     def fMouvement_vaisseau(self, event):
         touche = event.keysym
@@ -56,5 +58,9 @@ class Vaisseau():
     def fMaj_score(self):
         self.score_label.config(text = self.score)
 
-    
-            
+    def fCollision_alien(self):
+        for alien in self.list_alien:
+            if self.x-self.dimension[0]<=alien.x<=self.x+self.dimension[0]:
+                if self.y-self.dimension[1]<=alien.y<=self.y+self.dimension[1]:
+                    print("kk")
+                    self.fHit(self.vie)
