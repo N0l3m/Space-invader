@@ -78,10 +78,11 @@ class Balle():
                         self.vaisseau.fMaj_score()
 
             for i,block in enumerate(self.liste_protection):
-                if block.y <= self.y <= block.y+block.dimension[1]:   
+                 if self.bouge and block.y + self.dimension[1] <= self.y <= block.y+2*block.dimension[1]:   
                     if block.x <= self.x <= block.x+block.dimension[0]:
                         self.canvas.delete(self.img)
                         self.bouge = False
+                        print(self.bouge, 'a supprimer (',i,') :', self)
                         self.lst_balle.remove(self)
     
     #fonction qui detruit la balle

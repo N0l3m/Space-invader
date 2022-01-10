@@ -5,19 +5,21 @@ import Protection as pr
 import Partie as pa
 
 #fonction qui lance le jeu
-def fPlay(pVaisseau, pBouton, pCanvas, pFen, pScore):
+def fPlay(pVaisseau, pBouton, pCanvas, pFen, pScore, pLst_alien):
 
     #conditions initiales du jeu
     nb_alien = 7
+    type = (0,1,2)
     X_alien = 325
-    Y_alien = 50
-    vitesse_alien = 20
+    Y_alien = 70
+    vitesse_alien = 2
+    vitesse_alien_special = 1
     nb_de_block = 3
     espacement_protection = 700/nb_de_block
 
 
     #creation des objet alien
-    liste_alien = []
+    liste_alien = pLst_alien
 
     #creation des objets blocks
     liste_block = []
@@ -33,19 +35,26 @@ def fPlay(pVaisseau, pBouton, pCanvas, pFen, pScore):
         for n in range(nombre_alien_derniere_ligne):
             
             if n<4:
-                liste_alien.append(a.Alien(X_alien+n*100,Y_alien+100*(nombre_de_ligne),vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block))
+                liste_alien.append(a.Alien(X_alien+n*100,Y_alien+100*(nombre_de_ligne),vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block, type[1]))
             if 4<=n<=7:
-                liste_alien.append(a.Alien(X_alien-(nb_alien-n)*100,Y_alien+100*(nombre_de_ligne),vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block))
+                liste_alien.append(a.Alien(X_alien-(nb_alien-n)*100,Y_alien+100*(nombre_de_ligne),vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block, type[1]))
     
     for m in range(nombre_de_ligne):
+        if m == nombre_de_ligne - 1:
+            for al in range(7):
+                if al<4:
+                    liste_alien.append(a.Alien(X_alien+al*100,Y_alien+100*m,vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block, type[1]))
+                if 4<=al<=7:
+                    liste_alien.append(a.Alien(X_alien-(7-al)*100,Y_alien+100*m,vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block, type[1]))
+        else:
+            for al in range(7):
+                
+                if al<4:
+                    liste_alien.append(a.Alien(X_alien+al*100,Y_alien+100*m,vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block, type[0]))
+                if 4<=al<=7:
+                    liste_alien.append(a.Alien(X_alien-(7-al)*100,Y_alien+100*m,vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block, type[0]))
 
-        for al in range(7):
-            
-            if al<4:
-                liste_alien.append(a.Alien(X_alien+al*100,Y_alien+100*m,vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block))
-            if 4<=al<=7:
-                liste_alien.append(a.Alien(X_alien-(7-al)*100,Y_alien+100*m,vitesse_alien,pCanvas, liste_alien, vaisseau_jeu, liste_block))
-
+    liste_alien.append(a.Alien(325, 10, vitesse_alien_special,pCanvas, liste_alien, vaisseau_jeu, liste_block, type[2]))
 
     #creation des protections
     for B in range(nb_de_block):
@@ -67,3 +76,11 @@ def fPlay(pVaisseau, pBouton, pCanvas, pFen, pScore):
     pCanvas.delete(pVaisseau)
 
     game_on="false"
+
+
+def fNouvelle_partie(pCanvas, pLst_alien):
+
+    for alien in liste_alien:
+        liste_alien.remove(alien)
+
+    vaisseau_jeu = pCanvas.create_rectangle(325, 525, 325+50, 525+50, fill='white')

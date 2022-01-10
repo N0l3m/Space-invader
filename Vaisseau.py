@@ -12,22 +12,21 @@ class Vaisseau():
         self.y = pY_vaisseau
         self.dimension = (50,50)
         self.couleur_balle = "blue"
+        self.type = "v"
 
         self.canvas = pCanvas
         self.img = self.canvas.create_rectangle(self.x, self.y, self.x+self.dimension[0], self.y+self.dimension[1], fill='white')
         
         self.force = 5
-        self.temps_de_recharge = 1500
+        self.temps_de_recharge = 2000
         self.vie = 3
-        self.vitesse_tir = 0.3
+        self.vitesse_tir = 0.2
         self.reload = True
         self.balle_list = []
         self.list_alien = liste_alien
         self.score = 0
         self.score_label = pScore_label
         self.nb_alien_mort = 0
-
-        self.fCollision_alien()
 
     def fMouvement_vaisseau(self, event):
         touche = event.keysym
@@ -44,7 +43,7 @@ class Vaisseau():
     def fTir(self, event):
         if self.reload:
             self.reload = False
-            self.balle_list.append(b.Balle(self.x+self.dimension[0]/2, self.y, self.vitesse_tir, self.force, -1, self.canvas, self.list_alien, self, self.balle_list, self.couleur_balle, self.liste_protection))
+            self.balle_list.append(b.Balle(self.x+self.dimension[0]/2, self.y, self.vitesse_tir, self.force, -1, self.canvas, self.list_alien, self, self.balle_list, self.couleur_balle, self.liste_protection, self.type, 0))
             self.canvas.after(self.temps_de_recharge, lambda: self.reloading())
 
     def reloading(self):
@@ -61,6 +60,5 @@ class Vaisseau():
     def fCollision_alien(self):
         for alien in self.list_alien:
             if self.x-self.dimension[0]<=alien.x<=self.x+self.dimension[0]:
-                if self.y-self.dimension[1]<=alien.y<=self.y+self.dimension[1]:
-                    print("kk")
-                    self.fHit(self.vie)
+                if self.y-self.dimension[1]<=alien.y<=self.y+self.dimension[1]:  
+                    self.fHit(self.vie) 

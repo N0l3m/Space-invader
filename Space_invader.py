@@ -1,5 +1,5 @@
 from tkinter import Tk,Button,Canvas,Label
-from Space_invader_func import fPlay
+from Space_invader_func import fPlay, fNouvelle_partie
 
 """
 --------------------------------------------------------------------------------------------------------------------------------------
@@ -48,22 +48,23 @@ label_score_titre.place(x=5,y=5)
 label_score_chiffre = Label(fen, text ="0")
 label_score_chiffre.place(x=100,y=5)
 
-#le game_on permet que le bouton nouvelle partie ne puisse etre actionnee une seule fois a la fois
-game_on = "true"
+liste_alien = []
 
 #bouton pour quitter la fenetre: 
 Bouton_Quitter=Button(fen, text ='Quitter', command = fen.destroy, width=15)
 Bouton_Quitter.place(x=725,y=300)
 
 #bouton pour faire une nvelle partie
-Bouton_Nvlle_Partie=Button(fen, text ='Nouvelle partie', command = lambda: fNvelle_partie(325, 525), width=15)
+Bouton_Nvlle_Partie=Button(fen, text ='Nouvelle partie', command = lambda: fNouvelle_partie(canvas, liste_alien), width=15)
 Bouton_Nvlle_Partie.place(x=725,y=500)
 
 #creation de l'image vaisseau:
 vaisseau_menu = canvas.create_rectangle(325, 525, 325+50, 525+50, fill='white')
 
 #bouton pour lancer le jeu:
-bouton_play = Button(fen, text = 'Play', command = lambda: (fPlay(vaisseau_menu, bouton_play, canvas, fen, label_score_chiffre)), width=15, height= 5, foreground="black")
+bouton_play = Button(fen, text = 'Play', command = lambda: (fPlay(vaisseau_menu, bouton_play, canvas, fen, label_score_chiffre, liste_alien)), width=15, height= 5, foreground="black")
 bouton_play.place(x=305, y=300)
+
+
 
 fen.mainloop()
