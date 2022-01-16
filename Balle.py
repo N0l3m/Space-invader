@@ -4,7 +4,7 @@ class Balle():
         le parametre dir definit la direction de la balle, il vaut 1 si la balle est alien et -1 si elle est du vaisseau
         """
         self.x = pX
-        self.y = pY
+        self.y = pY+pDir*10
         self.force = pForce
         self.vitesse = pVitesse
         self.dir = pDir
@@ -22,7 +22,9 @@ class Balle():
         self.type = pType
         if self.type == 2:
             self.img = self.canvas.create_oval(self.x, self.y, self.x+10, self.y+10, fill = "red")
-        else:
+        if self.type == 1:
+            self.img = self.canvas.create_rectangle(self.x, self.y, self.x+self.dimension[0], self.y-self.dimension[1], fill = self.couleur)
+        if self.type == "v":
             self.img = self.canvas.create_rectangle(self.x, self.y, self.x+self.dimension[0], self.y-self.dimension[1], fill = self.couleur)
         self.bouge = True
         self.fMvmt_balle()
@@ -36,20 +38,22 @@ class Balle():
             if 0<= self.y <= 600:
                 self.y += self.vitesse*self.dir
                 self.canvas.coords(self.img, self.x, self.y, self.x+self.dimension[0], self.y-self.dimension[1])
-                self.canvas.after(1, lambda : self.fMvmt_balle())
+                self.canvas.after(20, lambda : self.fMvmt_balle())
 
             else:
                 self.canvas.delete(self.img)
 
     #fonction qui gere la collision balle d'alien/vaisseau et balle de vaisseau/alien
     def fCollision(self):
+        #collision balle d'alien/vaisseau et balle d'alien/blocks de protection
         if self.dir == 1:
-            if self.vaisseau.y <= self.y <= self.vaisseau.y+self.vaisseau.dimension[1]:
-                if self.vaisseau.x <= self.x <= self.vaisseau.x+self.vaisseau.dimension[0]:
+            if self.vaisseau.y-self.vaisseau.dimension[1] <= self.y <= self.vaisseau.y+self.vaisseau.dimension[1]:
+                if self.vaisseau.x-self.vaisseau.dimension[1] <= self.x <= self.vaisseau.x+self.vaisseau.dimension[0]:
                     self.canvas.delete(self.img)
                     self.vaisseau.fHit(self.force)
                     self.bouge = False
                     self.lst_balle.remove(self)
+                    self.vaisseau.fMaj_vie()
 
             for i,block in enumerate(self.liste_protection):
                 if block.y <= self.y <= block.y+block.dimension[1]:   
@@ -59,11 +63,11 @@ class Balle():
                         self.bouge = False
                         self.lst_balle.remove(self)
             
-
+        #collision balle de vaisseau/alien et balle de vaisseau/blocks de protection
         if self.dir == -1:
             for i,alien in enumerate(self.liste_alien):
-                if alien.y <= self.y <= alien.y+alien.dimension[1]:   
-                    if alien.x <= self.x <= alien.x+alien.dimension[0]:
+                if self.bouge and alien.y-alien.dimension[1] <= self.y <= alien.y+alien.dimension[1]:   
+                    if alien.x-alien.dimension[0] <= self.x <= alien.x+alien.dimension[0]:
                         self.canvas.delete(self.img)
                         alien.fHit(self.force, i)
                         self.bouge = False
@@ -73,8 +77,8 @@ class Balle():
                             self.vaisseau.score += 10
                         if alien.type == 1:
                             self.vaisseau.score += 25
-                        if self.vaisseau.score == 2:
-                            self.vaisseau += 150
+                        if alien.type == 2:
+                            self.vaisseau.score += 150
                         self.vaisseau.fMaj_score()
 
             for i,block in enumerate(self.liste_protection):
@@ -82,7 +86,6 @@ class Balle():
                     if block.x <= self.x <= block.x+block.dimension[0]:
                         self.canvas.delete(self.img)
                         self.bouge = False
-                        print(self.bouge, 'a supprimer (',i,') :', self)
                         self.lst_balle.remove(self)
     
     #fonction qui detruit la balle
@@ -102,7 +105,7 @@ class Balle():
                 self.y += self.vitesse
                 self.x += (self.vitesse*self.diagonale)
                 self.canvas.coords(self.img, self.x, self.y, self.x+10, self.y-10)
-                self.canvas.after(1, lambda : self.fMvmt_special())
+                self.canvas.after(20, lambda : self.fMvmt_special())
             else:
                 self.bouge = False
                 self.canvas.delete(self.img)

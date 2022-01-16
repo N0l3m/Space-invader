@@ -11,11 +11,7 @@ class Partie():
         self.on_game = False
         self.victoire = False
         print(self.vaisseau.nb_alien_mort)
-        self.fMaj_score()
-
-    def fMaj_score(self):
         
-        self.score.config(text = 10*self.vaisseau.nb_alien_mort)
 
     def fInit_score(self):
         if self.on_game == False:

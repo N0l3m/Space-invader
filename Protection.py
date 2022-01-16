@@ -22,9 +22,11 @@ class Protection():
         self.img = self.canvas.create_rectangle(self.x,self.y,self.x+self.dimension[0],self.y+self.dimension[1],fill=self.couleur)
 
     def fHit(self, pDegat, pIndice):
-        print("bbb")
         self.vie_block -= pDegat
         if self.vie_block == 0:
-            self.canvas.delete(self.img)
-            self.lst_protection.pop(pIndice)
-            print("aaa")
+            self.fDes_block()
+
+    def fDes_block(self):
+        self.vie = 0
+        self.canvas.delete(self.img)
+        self.lst_protection.remove(self)
