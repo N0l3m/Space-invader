@@ -1,32 +1,40 @@
 from tkinter import Tk,Button,Canvas,Label
 
-
+#creation d'un objet de type protection
 class Protection():
 
-    def __init__(self,pPos_block_X,pPos_block_Y,pCanvas,pLst_protection):
+    #initialisation d'un objet de type protection
 
-        self.lst_protection = pLst_protection
+    #x: coordonnée X de la protection
+    #y: coordonnée Y de la protection
+    #canvas: canvas créé dans le main
+    #lst_protection: liste des blocks initialisée vide
 
-        self.canvas = pCanvas
+    def __init__(self,x,y,canvas,lst_protection):
+
+        self.lst_protection = lst_protection
+
+        self.canvas = canvas
         self.dimension = (20,20)
         self.vie_block = 1
-        self.x = pPos_block_X
-        self.y = pPos_block_Y
+        self.x = x
+        self.y = y
         self.couleur = "brown"
         self.img = None
         
-        self.fCreation_block()
+        self.fCreation_bloc()
         
-
-    def fCreation_block(self):
+    #creation d'une protection
+    def fCreation_bloc(self):
         self.img = self.canvas.create_rectangle(self.x,self.y,self.x+self.dimension[0],self.y+self.dimension[1],fill=self.couleur)
 
-    def fHit(self, pDegat, pIndice):
+    #destruction d'une protection si collision avec celle-ci
+    def fHit(self, pDegat):
         self.vie_block -= pDegat
         if self.vie_block == 0:
-            self.fDes_block()
+            self.fDes_bloc()
 
-    def fDes_block(self):
+    def fDes_bloc(self):
         self.vie = 0
         self.canvas.delete(self.img)
         self.lst_protection.remove(self)

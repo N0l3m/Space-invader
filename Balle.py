@@ -1,25 +1,42 @@
+#class permettant la création d'un objet de type balle
 class Balle():
-    def __init__(self, pX, pY, pVitesse, pForce, pDir, pCanvas, pList_alien, pVaiseau, pLst_balle, pCouleur_balle, pLst_protection, pType, pDiag):
-        """
-        le parametre dir definit la direction de la balle, il vaut 1 si la balle est alien et -1 si elle est du vaisseau
-        """
-        self.x = pX
-        self.y = pY+pDir*10
-        self.force = pForce
-        self.vitesse = pVitesse
-        self.dir = pDir
-        self.diagonale = pDiag
-        self.canvas = pCanvas
+
+    #initialisation d'un objet de type balle
+
+    #x: coordonnée X de la balle
+    #y: coordonnée Y de la balle
+    #vitesse: vitesse de la balle
+    #force: degats de la balle
+    #dir: definit la direction de la balle, il vaut 1 si la balle est alien et -1 si elle est du vaisseau
+    #canvas: canvas créé dans le programme principal
+    #liste_alien: liste contenants les objets aliens
+    #vaisseau: objet vaisseau
+    #lst_balle: liste des balles de l'objet associé
+    #couleur_balle: couleur de la balle (bleu si vaisseau, rouge si alien)
+    #lst_protection: liste des blocks de protection
+    #type: permet de savoir si le tireur est un vaisseau ou un alien de type 0, 1 ou 2
+    #diag: pour l'alien de type 2, son tir es tcomposé de 3 balles: un vertical et deux diagonnaux symétriques par rapport au premier
+
+
+    def __init__(self, x, y, vitesse, force, dir, canvas, liste_alien, vaisseau, lst_balle, couleur_balle, lst_protection, type, diag):
+        
+        self.x = x
+        self.y = y+dir*10
+        self.force = force
+        self.vitesse = vitesse
+        self.dir = dir
+        self.diagonale = diag
+        self.canvas = canvas
 
         self.dimension = (4,20)
 
-        self.lst_balle = pLst_balle
+        self.lst_balle = lst_balle
         self.lst_balle_speciale = []
-        self.couleur = pCouleur_balle
-        self.liste_alien = pList_alien
-        self.vaisseau = pVaiseau
-        self.liste_protection = pLst_protection
-        self.type = pType
+        self.couleur = couleur_balle
+        self.liste_alien = liste_alien
+        self.vaisseau = vaisseau
+        self.liste_protection = lst_protection
+        self.type = type
         if self.type == 2:
             self.img = self.canvas.create_oval(self.x, self.y, self.x+10, self.y+10, fill = "red")
         if self.type == 1:
@@ -43,7 +60,7 @@ class Balle():
             else:
                 self.canvas.delete(self.img)
 
-    #fonction qui gere la collision balle d'alien/vaisseau et balle de vaisseau/alien
+    #fonction qui gere la collision d'une balle
     def fCollision(self):
         #collision balle d'alien/vaisseau et balle d'alien/blocks de protection
         if self.dir == 1:
@@ -59,7 +76,7 @@ class Balle():
                 if block.y <= self.y <= block.y+block.dimension[1]:   
                     if block.x <= self.x <= block.x+block.dimension[0]:
                         self.canvas.delete(self.img)
-                        block.fHit(self.force, i)
+                        block.fHit(self.force)
                         self.bouge = False
                         self.lst_balle.remove(self)
             
@@ -92,10 +109,7 @@ class Balle():
     def fDes_balle(self):
         if self.y>=600 or self.y<=0:
             self.bouge = False
-            self.lst_balle.remove(self)
-
-    #fonction qui lance le tire special de l'alien de niveau 2
-    
+            self.lst_balle.remove(self) 
     
     #fonction qui gere le mvmt des trois balles apres le splir de la balle speciale
     def fMvmt_special(self):

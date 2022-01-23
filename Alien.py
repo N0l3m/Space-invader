@@ -3,24 +3,36 @@ import Vaisseau as V
 import Balle as b
 import random
 
+#class permettant la création d'un objet de type alien
 class Alien():
+
+    #initialisation d'un objet de type alien
+
+    #x: coordonnée X de l'alien
+    #y: coordonnée Y de l'alien
+    #vitesse: vitesse de déplaement de l'alien
+    #canvas: canvas créé dans le main
+    #liste_alien: liste des alien
+    #vaisseau: objet vaisseau
+    #lst_protection: liste des blocks initialisée vide
+    #type: 0, 1, 2, permet de savoir si l'alien tire ou non, et si l'alien est un alien spécial
     
-    def __init__(self, pX_alien, pY_alien, pVitesse, pCanvas, pListe_alien, pVaisseau, pLst_protection, pType, pFen):
+    def __init__(self, x, y, vitesse, canvas, liste_alien, vaisseau, lst_protection, type):
 
-        self.vaisseau = pVaisseau
-        self.liste_protection = pLst_protection
+        self.vaisseau = vaisseau
+        self.liste_protection = lst_protection
 
-        self.list_alien = pListe_alien
-        self.vitesse = pVitesse
+        self.list_alien = liste_alien
+        self.vitesse = vitesse
         self.dimension = (16.7,16.7)
         self.couleur_balle = "red"
 
-        self.canvas = pCanvas
-        self.type = pType
+        self.canvas = canvas
+        self.type = type
         self.vie = 1
         self.force = 1
-        self.x = pX_alien
-        self.y = pY_alien
+        self.x = x
+        self.y = y
         if self.type == 2:
             self.img_data = PhotoImage(file = "media/img/alien_sp.png")
             self.img = self.canvas.create_image(self.x,self.y, image = self.img_data)
@@ -31,11 +43,12 @@ class Alien():
         self.vitesse_tir = 6
         self.reload = True
         
-        #self.fMvmt_alien()
+        self.fMvmt_alien()
         self.fReloading()
         self.vaisseau.fCollision_alien()
 
-    #fonction qui met en mouvement l'alien
+    #fonction qui met en mouvement l'alien de manière horizontale: si l'alien percute un bord du canvas, il descend verticlement et continue
+    #et continue son mouvement horizontal mais dans le sens opposé
     def fMvmt_alien(self):     
         if self.vie >= 1:
             
@@ -55,14 +68,14 @@ class Alien():
                 self.fDes_alien()
             self.vaisseau.fCollision_alien()
 
-    #fonction qui fait perdre de la vie en cas de collision avec un objet ennemi
-    def fHit(self, pDegat, indice):
-        self.vie -= pDegat
+    #fonction qui fait perdre de la vie (degat) en cas de collision avec un objet ennemi, et qui retire l'alien
+    #d'indice "indice" dans la liste des aliens si sa vie est nulle ou négative
+
+    def fHit(self, degat, indice):
+        self.vie -= degat
         if self.vie <= 0:
             self.canvas.delete(self.img)
             self.list_alien.pop(indice)
-            if self.list_alien == []:
-                self.label_victoire.place(x=300, y=200)
         self.vaisseau.fVictoire()
 
     #fonction qui fait tirer l'alien de niveau 1 ou plus
